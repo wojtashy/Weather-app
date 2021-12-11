@@ -2,21 +2,14 @@ import React, { useState } from "react";
 
 const SunRise = (props) =>{
 
-const [timeFetched,setTimeFetched ] = useState(props.isSet);
-const [sunRiseHours, setSunriseHours]= useState('');
 
-const getSunriseHours = (latlng)=>{
-    if(timeFetched){
-        const lat = latlng.substring(0,latlng.indexOf('&'))
-        const lng = latlng.substring(latlng.indexOf('&')+1,latlng.length)
-        fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}`)
-        .then(response => response.json())
-        .then(result => {
-            setSunriseHours(convertSunsetTime(props.offset, result.results.sunrise,result.results.sunset))
-            setTimeFetched(true)
-        })
-    }}
-getSunriseHours(props.latlng);
+
+
+    
+    
+
+
+
 
 return(
     <>
@@ -41,25 +34,17 @@ return(
     </div>
     <div className="row align-items-cetner justify-content-center">
         <div className="col-3 d-flex justify-content-center"> 
-            <p>Sunrise: {sunRiseHours.newSunrise}</p>
+            <p>Sunrise: </p>
         </div>
         <div className="col-2 d-flex justify-content-center">
                 
         </div>
         <div className="col-3 d-flex justify-content-center">
-            <p>Sunset: {sunRiseHours.newSunset} </p>
+            <p>Sunset:  </p>
         </div>
     </div>
     </>
 )
-}
-const convertSunsetTime = (offset,sunrise,sunset) =>{
-    const converted = {
-        newSunrise: (1*sunrise.substring(0,sunrise.indexOf(':')))+ (offset*1)+ sunrise.substring(sunrise.indexOf(':'),sunrise.indexOf(':')+3),
-        newSunset:  (1*sunset.substring(0,sunset.indexOf(':')))+ (offset*1+12) +sunset.substring(sunset.indexOf(':'),sunset.indexOf(':')+3)
-    }
-
-     return(converted)
 }
 
 export default SunRise;
