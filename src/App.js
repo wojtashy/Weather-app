@@ -2,9 +2,10 @@ import React from "react";
 import { useState } from "react";
 import SunRise from "./components/Sunrise";
 import WeatherCard from "./components/WeatherCard";
+import FiveDaysWeather from './components/FiveDaysWeather'
 function App() {
   const weatherApiKey = '98b8ae4676e751b25a28160f8c3a8be7';
-  const weatherApiUrl = 'https://api.openweathermap.org/data/2.5/weather?q='
+  const weatherApiUrl = `https://api.openweathermap.org/data/2.5/onecall?`
   
   const [currentCityWeather, setCurrentCityWeather] = useState(false);
   const [selectedCityName, setSelectedCityName] = useState('Poznań');
@@ -26,7 +27,7 @@ function App() {
     {
       name: 'Poznań',
     timeZone: 'CET',
-    offset: '+1',
+    offset: +1,
     lat: '52.409538',
     lng: '16.931992',
    
@@ -35,7 +36,7 @@ function App() {
     {
     name: 'Londyn',
     timeZone:'GMT',
-    offset: '0',
+    offset: 0,
     lat: '51.509865',
     lng: '-0.118092',
     
@@ -43,31 +44,17 @@ function App() {
     {
     name: 'Havana',
     timeZone:'CST',
-    offset: '-5',
+    offset: -5,
     lat: '23.113592',
     lng: '-82.366592',
     
     }
   ]);
-  const getWeather = (city) =>{
-    fetch(`${weatherApiUrl}${city}&appid=${weatherApiKey}&units=metric`)
+  const getWeather = (lat,lng) =>{
+    fetch(`${weatherApiUrl}lat=${lat}&lon=${lng}&exclude=minutely,alerts,hourly&appid=${weatherApiKey}&units=metric`)
     .then(res=>res.json())
     .then(response => setCurrentCityWeather(response))
   }
-  //  window.onload = ()=>  {
-  //    getSunTime(cities[0].lat, cities[0].lng, cities[0].offset, 0)
-  //    getSunTime(cities[1].lat, cities[1].lng, cities[1].offset, 1)
-  //    getSunTime(cities[2].lat, cities[2].lng, cities[2].offset, 2)
-  //   }
-  // const getSunTime = (lat,lng, offset, index) =>{
-  //   fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}`)
-  //   .then(response => response.json())
-  //   .then(result => {
-     
-  //     setSunHours(sunHours.map( (e,i)=> i==index ? [convertSunsetTime(offset, result.results.sunrise,result.results.sunset)]: e ))
-  
-  //   })
-  // }
 
   return (
     <div className="shadow-lg d-flex justify-content-center flex-column align-items-center container-lg bg-dark bg-gradient bg-opacity-10 mt-3 rounded p-2" >
@@ -78,7 +65,7 @@ function App() {
        const index = cities.findIndex(element => element.name === e.target.value)
        getCityLatLng(cities[index].lat+"&"+cities[index].lng)
        setSelectedCityOS(cities[index].offset)
-       getWeather(e.target.value)
+       getWeather(cities[index].lat,cities[index].lng)
        }}>
        {cities.map( (city,i)=> <option key={i} value={city.name} selected={city.name === 'Londyn' ? true : false}>{city.name}</option>)}
      </select></div>
@@ -92,8 +79,12 @@ function App() {
 <CurrentTime offset={selectedCityOS}/></div>
        
      </div>
-     {/* <SunRise latlng={selectedCityLatLng} offset={selectedCityOS} isSet={false} name={selectedCityName}></SunRise> */}
+    {currentCityWeather ? <SunRise sunrise={currentCityWeather.current.sunrise} sunset={currentCityWeather.current.sunset} offset={currentCityWeather.timezone_offset}></SunRise>: null}
      {currentCityWeather ? <WeatherCard weather={currentCityWeather}></WeatherCard>:null}
+     <h2 className="mt-3">5-days weather</h2>
+     <div className="d-flex flex-row justify-content-center gap-3 mt-3">
+       {currentCityWeather ? <FiveDaysWeather weather={currentCityWeather.daily}></FiveDaysWeather>:null}
+       </div>
     </div>
   );
 }
@@ -113,7 +104,11 @@ const convertTime = (timeZoneOffset) =>{
     const time = convertTime(props.offset)
 
   return(
-    <p className="m-0 ms-2 fs-3"> {time.substring(time.indexOf(',')+1,time.length-3)}{seconds <10 ? ":0"+seconds : ":"+seconds}</p>
+    <div>
+      <p className="m-0 ms-2 fs-3"> {time.substring(time.indexOf(',')+1,time.length-3)}{seconds <10 ? ":0"+seconds : ":"+seconds}</p>
+      
+    </div>
+    
   )
 
 }
